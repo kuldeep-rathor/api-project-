@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState , useEffect, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -7,13 +7,15 @@ function App() {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [retrying, setRetrying] = useState(false);
-  const [retryInterval, setRetryInterval] = useState(null);
+  // const [retrying, setRetrying] = useState(false);
+  // const [retryInterval, setRetryInterval] = useState(null);
 
-  async function fetchMoviesHandler() {
+
+
+const  fetchMoviesHandler = useCallback(async()=> {
     setIsLoading(true);
     setError(null);
-    setRetrying(false);
+    // setRetrying(false);
     try {
       const response = await fetch("https://swapi.dev/api/films/");
       if (!response.ok) {
@@ -35,35 +37,38 @@ function App() {
       setError(error.message);
       
       
-      setRetryInterval(
-        setInterval(() => {
-          fetchMoviesHandler();
-        }, 5000)
-      );
-      setRetrying(true);
+      // setRetryInterval(
+      //   setInterval(() => {
+      //     fetchMoviesHandler();
+      //   }, 5000)
+      // );
+      // setRetrying(true);
     }
     setIsLoading(false);
-  }
-  function cancelRetryHandler() {
-    if (retryInterval) {
-      clearInterval(retryInterval);
-      setRetrying(false);
-    }
-  }
+  } ,[]); 
+  // function cancelRetryHandler() {
+  //   if (retryInterval) {
+  //     clearInterval(retryInterval);
+  //     setRetrying(false);
+  //   }
+  // }
 
-  useEffect(() => {
-    return () => {
-      cancelRetryHandler();
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     cancelRetryHandler();
+  //   };
+  // }, []);
+  useEffect (()=>{
+    fetchMoviesHandler ();
+  },[fetchMoviesHandler]);
 
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
-        {retrying && (
-          <button onClick={cancelRetryHandler}>Cancel Retrying</button>
-        )}
+        {/* {retrying && ( */}
+          {/* // <button onClick={cancelRetryHandler}>Cancel Retrying</button> */}
+        {/* )} */}
       </section>
       <section>
         {!isLoading && movies.length > 0 && <MoviesList movies={movies} />}
